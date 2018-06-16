@@ -18,6 +18,7 @@ from view.panel_find_similar import FindSimilarPanel
 from view.panel_group import GroupPanel
 from view.panel_identification import IdentificationPanel
 from view.panel_verification import VerificationPanel
+from view.panel_video import VideoPanel
 
 TITLE = u"Microsoft Cognitive Services Face Samples"
 
@@ -41,6 +42,7 @@ class MyLabelBook(LB.LabelBook):
         self.AddPage(GroupPanel(self), u" - Face Grouping")
         self.AddPage(IdentificationPanel(self), u" - Face Identification")
         self.AddPage(VerificationPanel(self), u" - Face Verification")
+        self.AddPage(VideoPanel(self), u" - Face Video Detection")
 
 
 class MyTitle(wx.Panel):

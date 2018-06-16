@@ -4,3 +4,8 @@ pyflakes
 pylint
 requests
 wxpython
+opencv-python
+cufflinks
+numpy
+plotly
+matplotlib

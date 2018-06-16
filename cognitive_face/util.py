@@ -13,7 +13,7 @@ import cognitive_face as CF
 
 DEFAULT_BASE_URL = 'https://westus.api.cognitive.microsoft.com/face/v1.0/'
 
-TIME_SLEEP = 1
+TIME_SLEEP = 3.01
 
 
 class CognitiveFaceException(Exception):

@@ -9,6 +9,14 @@ import time
 import wx
 
 import util
+import numpy as np
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_wxagg import NavigationToolbar2WxAgg as NavigationToolbar
+
 
 
 class MyPanel(wx.Panel):
@@ -257,3 +265,79 @@ class MyFaceList(wx.VListBox):
         self.faces = faces
         self.SetItemCount(len(self.faces))
         self.Refresh()
+
+
+class MyPlotChart(wx.Panel):
+    """Plot histogram chart."""
+
+    def __init__(self, parent):
+        super(MyPlotChart, self).__init__(parent)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.AddStretchSpacer()
+        self.sizer.SetMinSize((util.MAX_IMAGE_SIZE, -1))
+        self.SetSizer(self.sizer)
+        self.Layout()
+    pass
+
+
+class Plot(wx.Panel):
+    def __init__(self, parent, id=-1, dpi=None, **kwargs):
+        wx.Panel.__init__(self, parent, id=id, **kwargs)
+        self.figure = Figure(dpi=dpi, figsize=(2, 2))
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.axes = self.figure.add_subplot(111)
+        self.axes.set_xlim(0, 200)
+        self.axes.set_ylim(0, 1)
+        self.axes.grid(True)
+        colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'gray']
+        labels = ['anger', 'contempt', 'disgust', 'fear', 'happiness', 'sadness', 'surprise', 'neutral']
+
+        self.n_bins = 1
+        self.x = [[],[],[],[],[],[],[],[]]
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.canvas, 1, wx.EXPAND)
+        sizer.SetMinSize((util.MAX_IMAGE_SIZE, -1))
+        self.SetSizer(sizer)
+        self.Fit()
+
+
+    def SetItems(self, faces):
+        """Set the items for the list."""
+        anger, contempt, disgust, fear, happiness, neutral, sadness, surprise = \
+            [], [], [], [], [], [], [], []
+        anger       = list(map(lambda face: face['faceAttributes']['emotion']['anger'], faces))
+        contempt    = list(map(lambda face: face['faceAttributes']['emotion']['contempt'], faces))
+        disgust     = list(map(lambda face: face['faceAttributes']['emotion']['disgust'], faces))
+        fear        = list(map(lambda face: face['faceAttributes']['emotion']['fear'], faces))
+        happiness   = list(map(lambda face: face['faceAttributes']['emotion']['happiness'], faces))
+        sadness     = list(map(lambda face: face['faceAttributes']['emotion']['sadness'], faces))
+        surprise    = list(map(lambda face: face['faceAttributes']['emotion']['surprise'], faces))
+        neutral     = list(map(lambda face: face['faceAttributes']['emotion']['neutral'], faces))
+        self.x[0].append(self.mean(anger))
+        self.x[1].append(self.mean(contempt))
+        self.x[2].append(self.mean(disgust))
+        self.x[3].append(self.mean(fear))
+        self.x[4].append(self.mean(happiness))
+        self.x[5].append(self.mean(sadness))
+        self.x[6].append(self.mean(surprise))
+        self.x[7].append(self.mean(neutral))
+
+        colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k', 'gray']
+        labels = ['anger', 'contempt', 'disgust', 'fear', 'happiness', 'sadness', 'surprise', 'neutral']
+        self.axes.cla()
+        self.axes.set_xlim(0, 200)
+        self.axes.set_ylim(0, 1)
+        self.axes.grid(True)
+        self.axes.hist(self.x, density=True, histtype='bar', stacked=True, color=colors, label=labels)
+        print(self.x)
+        self.axes.plot()
+        self.canvas.draw()
+        plt.show()
+
+        import json
+        with open('data.txt', 'w') as outfile:
+            json.dump(self.x, outfile)
+
+
+    def mean(self, numbers):
+        return float(sum(numbers)) / max(len(numbers), 1)

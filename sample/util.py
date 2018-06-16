@@ -22,6 +22,7 @@ except ImportError:
     import cognitive_face as CF
 
 IMAGE_WILDCARD = 'Image files (*.jpg, *.png)|*.jpg; *.png'
+VIDEO_WILDCARD = 'Video files (*.mp4)|*.mp4;'
 INNER_PANEL_WIDTH = 710
 MAX_IMAGE_SIZE = 300
 MAX_THUMBNAIL_SIZE = 75
